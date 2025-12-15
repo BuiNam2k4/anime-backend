@@ -25,6 +25,7 @@ public class AnimeController {
     @PostMapping
     ApiResponse<AnimeResponse> createAnime (@RequestBody AnimeRequest animeRequest){
         return ApiResponse.<AnimeResponse>builder()
+                .message("Create anime successfull")
                 .result(animeService.createAnime(animeRequest))
                 .build();
     }

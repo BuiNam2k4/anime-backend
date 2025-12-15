@@ -6,4 +6,5 @@ import vn.kurisu.anime_service.entity.Anime;
 @Repository
 public interface AnimeReposiory extends JpaRepository<Anime, Long> {
 
+    boolean existsByTitle(String title);
 }

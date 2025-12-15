@@ -7,6 +7,8 @@ import vn.kurisu.anime_service.dto.request.AnimeRequest;
 import vn.kurisu.anime_service.dto.response.AnimeResponse;
 import vn.kurisu.anime_service.entity.Anime;
 import vn.kurisu.anime_service.entity.Genre;
+import vn.kurisu.anime_service.exception.AppException;
+import vn.kurisu.anime_service.exception.ErrorCode;
 import vn.kurisu.anime_service.mapper.AnimeMapper;
 import vn.kurisu.anime_service.repository.AnimeReposiory;
 import vn.kurisu.anime_service.repository.GenreRepository;
@@ -23,6 +25,9 @@ public class AnimeService {
     private AnimeMapper animeMapper;
 
     public AnimeResponse createAnime (AnimeRequest animeRequest){
+        if (animeReposiory.existsByTitle(animeRequest.getTitle())){
+            throw new AppException(ErrorCode.EXISTS_EXCEPTION);
+        }
         Anime anime = animeMapper.toAnime(animeRequest);
         List<Genre> foundGenres = genreRepository.findAllById(animeRequest.getGenreIDs());
         anime.setGenres(new HashSet<>(foundGenres));
@@ -32,5 +37,9 @@ public class AnimeService {
     }
     public List<AnimeResponse> getAllAnime (){
         return animeReposiory.findAll().stream().map(animeMapper::toAnimeResponse).toList();
+    }
+
+    public void deleteAnime (Long id){
+         animeReposiory.deleteById(id);
     }
 }
