@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import vn.kurisu.anime_service.dto.request.AnimeRequest;
+import vn.kurisu.anime_service.dto.request.AnimeUpdateRequest;
 import vn.kurisu.anime_service.dto.response.AnimeResponse;
 import vn.kurisu.anime_service.entity.Anime;
 import vn.kurisu.anime_service.entity.Genre;
@@ -41,5 +42,11 @@ public class AnimeService {
 
     public void deleteAnime (Long id){
          animeReposiory.deleteById(id);
+    }
+    public AnimeResponse updateAnime (AnimeUpdateRequest request, Long id){
+        Anime anime = animeReposiory.findById(id).orElseThrow(()->new AppException(ErrorCode.EXISTS_EXCEPTION));
+        animeMapper.updateAnime(anime,request);
+        return animeMapper.toAnimeResponse(animeReposiory.save(anime));
+
     }
 }

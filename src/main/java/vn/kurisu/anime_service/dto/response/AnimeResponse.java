@@ -12,6 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 public class AnimeResponse {
+    private String id;
     private String title;
 
     private String synopsis;
