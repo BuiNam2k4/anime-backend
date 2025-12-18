@@ -2,10 +2,15 @@ package vn.kurisu.anime_service.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import vn.kurisu.anime_service.dto.request.AnimeRequest;
 import vn.kurisu.anime_service.dto.request.AnimeUpdateRequest;
 import vn.kurisu.anime_service.dto.response.AnimeResponse;
+import vn.kurisu.anime_service.dto.response.PageResponse;
 import vn.kurisu.anime_service.entity.Anime;
 import vn.kurisu.anime_service.entity.Genre;
 import vn.kurisu.anime_service.exception.AppException;
@@ -36,8 +41,24 @@ public class AnimeService {
 
 
     }
-    public List<AnimeResponse> getAllAnime (){
-        return animeReposiory.findAll().stream().map(animeMapper::toAnimeResponse).toList();
+    public PageResponse<AnimeResponse> getAllAnime (int page, int size, String keyword){
+        Sort sort = Sort.by(Sort.Direction.DESC,"id");
+        Pageable pageable = PageRequest.of(page-1,size,sort);
+        Page<Anime> pageData;
+        if (keyword!= null && !keyword.isBlank()){
+            pageData = animeReposiory.findAll(pageable);
+        }
+        else{
+            pageData= animeReposiory.findAll(pageable);
+        }
+        var dtoList = pageData.map(animeMapper::toAnimeResponse).getContent();
+        return PageResponse.<AnimeResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(dtoList)
+                .build();
     }
 
     public void deleteAnime (Long id){

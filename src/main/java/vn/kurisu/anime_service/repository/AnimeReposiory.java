@@ -1,10 +1,14 @@
 package vn.kurisu.anime_service.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import vn.kurisu.anime_service.entity.Anime;
+
 @Repository
 public interface AnimeReposiory extends JpaRepository<Anime, Long> {
-
+    Page<Anime> findByTitleContaining (String keyword, Pageable pageable);
     boolean existsByTitle(String title);
+    Page<Anime> findAll(Pageable pageable);
 }

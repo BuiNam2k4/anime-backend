@@ -3,7 +3,11 @@ package vn.kurisu.anime_service.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import vn.kurisu.anime_service.entity.User;
+
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
+        boolean existsByUsername(String username);
+        User findByUsername(String username);
 }

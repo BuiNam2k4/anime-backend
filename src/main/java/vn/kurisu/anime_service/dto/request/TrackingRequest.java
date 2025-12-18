@@ -5,7 +5,7 @@ import vn.kurisu.anime_service.enums.WatchStatus;
 
 @Data
 public class TrackingRequest {
-    private Long userId;
+   // private Long userId;
     private Long animeId;
 
     private WatchStatus status;

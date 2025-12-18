@@ -5,12 +5,14 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 @Table (name = "users")
 public class User {
     @Id
@@ -25,4 +27,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<UserAnimeList> myAnimeList = new ArrayList<>();
+    @ElementCollection
+    private Set<String> roles;
 }
+
