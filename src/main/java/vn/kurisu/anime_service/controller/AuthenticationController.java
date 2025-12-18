@@ -1,6 +1,7 @@
 package vn.kurisu.anime_service.controller;
 
 import com.nimbusds.jose.JOSEException;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.kurisu.anime_service.dto.request.AuthenticationRequest;
 import vn.kurisu.anime_service.dto.request.IntrospectRequest;
+import vn.kurisu.anime_service.dto.request.LogoutRequest;
 import vn.kurisu.anime_service.dto.request.RegisterRequest;
 import vn.kurisu.anime_service.dto.response.ApiResponse;
 import vn.kurisu.anime_service.dto.response.AuthenticationResponse;
@@ -27,10 +29,17 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ApiResponse<UserResponse> register(@RequestBody RegisterRequest request){
+    public ApiResponse<UserResponse> register(@RequestBody @Valid RegisterRequest request){
         return ApiResponse.<UserResponse>builder()
                 .message("Dang ky thanh cong!")
                 .result(authenticationService.register(request))
+                .build();
+    }
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout (@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder()
+                .message("Dang xuat thanh cong")
                 .build();
     }
     @PostMapping("/refresh")

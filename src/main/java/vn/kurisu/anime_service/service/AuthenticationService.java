@@ -14,22 +14,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.kurisu.anime_service.dto.request.AuthenticationRequest;
 import vn.kurisu.anime_service.dto.request.IntrospectRequest;
+import vn.kurisu.anime_service.dto.request.LogoutRequest;
 import vn.kurisu.anime_service.dto.request.RegisterRequest;
 import vn.kurisu.anime_service.dto.response.AuthenticationResponse;
 import vn.kurisu.anime_service.dto.response.UserResponse;
+import vn.kurisu.anime_service.entity.InvalidatedToken;
 import vn.kurisu.anime_service.entity.User;
 import vn.kurisu.anime_service.exception.AppException;
 import vn.kurisu.anime_service.exception.ErrorCode;
 import vn.kurisu.anime_service.mapper.UserMapper;
+import vn.kurisu.anime_service.repository.InvalidatedTokenRepository;
 import vn.kurisu.anime_service.repository.UserRepository;
 
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +41,8 @@ public class AuthenticationService {
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
+
     public UserResponse register (RegisterRequest request){
         if (userRepository.existsByUsername(request.getUsername())){
             throw new AppException(ErrorCode.EXISTS_EXCEPTION);
@@ -96,6 +98,21 @@ public class AuthenticationService {
                 .authenticated(true)
                 .build();
     }
+    public void logout (LogoutRequest request) throws ParseException, JOSEException {
+        try{
+            var signToken = verifyToken(request.getToken());
+            String jit = signToken.getJWTClaimsSet().getJWTID();
+            Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+
+            InvalidatedToken invalidatedToken= InvalidatedToken.builder()
+                    .id(jit)
+                    .expiryTime(expiryTime)
+                    .build();
+            invalidatedTokenRepository.save(invalidatedToken);
+        }catch (AppException e){
+
+        }
+    }
     private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         // Parse token từ chuỗi string
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
@@ -105,8 +122,12 @@ public class AuthenticationService {
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
         var verified = signedJWT.verify(verifier);
 
+
+
         // Nếu hết hạn HOẶC chữ ký sai -> Báo lỗi
         if (!(verified && expiryTime.after(new Date())))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         return signedJWT;
@@ -124,6 +145,7 @@ public class AuthenticationService {
                         )
                 ).claim("userId",user.getId())
                 .claim("scope", buildScope(user))
+                .jwtID(UUID.randomUUID().toString())
                 .build();
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject= new JWSObject(header, payload);

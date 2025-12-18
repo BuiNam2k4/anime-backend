@@ -2,6 +2,7 @@ package vn.kurisu.anime_service.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,7 +18,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class FileUploadController {
     private final FileUploadService fileUploadService;
-
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<String> upload(@RequestParam("file") MultipartFile file) {
         try {
