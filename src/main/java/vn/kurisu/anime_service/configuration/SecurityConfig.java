@@ -25,7 +25,9 @@ public class SecurityConfig {
             "/api/users", "/api/auth/token", "/api/auth/introspect", "/api/auth/logout", "/api/auth/refresh",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/api/anime",
+
     };
     @Value("${jwt.signerKey}")
     private String signerKey;
@@ -39,6 +41,7 @@ public class SecurityConfig {
                         // cho phep post vao duong dan dang nhap ma khong can token
 
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET,"api/anime/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2->oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
