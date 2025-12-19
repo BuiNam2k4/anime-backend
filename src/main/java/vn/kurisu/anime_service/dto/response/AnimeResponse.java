@@ -21,6 +21,6 @@ public class AnimeResponse {
 
     private String imageURL;
 
-    Set<String> genreNames;
+    private Set<GenreResponse> genres;
 
 }

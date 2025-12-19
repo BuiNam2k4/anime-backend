@@ -21,6 +21,7 @@ import vn.kurisu.anime_service.repository.GenreRepository;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @FieldDefaults(makeFinal = true)
@@ -35,8 +36,12 @@ public class AnimeService {
             throw new AppException(ErrorCode.EXISTS_EXCEPTION);
         }
         Anime anime = animeMapper.toAnime(animeRequest);
-        List<Genre> foundGenres = genreRepository.findAllById(animeRequest.getGenreIDs());
-        anime.setGenres(new HashSet<>(foundGenres));
+        if (animeRequest.getGenreMalIds()!=null){
+            Set<Genre> genres = genreRepository.findAllByMalIdIn(animeRequest.getGenreMalIds());
+            anime.setGenres(genres);
+        }
+       // List<Genre> foundGenres = genreRepository.findAllById(animeRequest.getGenreIDs());
+        //anime.setGenres(new HashSet<>(foundGenres));
         return animeMapper.toAnimeResponse(animeReposiory.save(anime));
 
 

@@ -23,6 +23,8 @@ public class AnimeRequest {
 
     private String imageURL;
 
-    private List<Long> genreIDs;
+   // private List<Long> genreIDs;
+
+    private List<Long> genreMalIds;
 
 }

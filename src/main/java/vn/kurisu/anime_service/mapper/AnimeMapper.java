@@ -14,14 +14,15 @@ import vn.kurisu.anime_service.repository.AnimeReposiory;
 public interface AnimeMapper {
     @Mapping(target = "genres", ignore = true)
     Anime toAnime (AnimeRequest animeRequest);
-    @Mapping(target = "genreNames", source = "genres")
+
     AnimeResponse toAnimeResponse (Anime anime);
-    default String mapGenreToString(Genre genre) {
-        if (genre == null) {
-            return null;
-        }
-        return genre.getName(); // Giả sử trong Genre bạn đã có field 'name'
-    }
+//    default String mapGenreToString(Genre genre) {
+//        if (genre == null) {
+//            return null;
+//        }
+//        return genre.getName(); // Giả sử trong Genre bạn đã có field 'name'
+//    }
+    @Mapping(target = "genres",ignore = true )
     void updateAnime(@MappingTarget Anime anime, AnimeUpdateRequest animeUpdateRequest);
 
 

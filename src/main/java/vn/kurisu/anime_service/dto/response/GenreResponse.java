@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class GenreResponse {
     private Long id;
     private String name;
+    private Integer malId;
 }

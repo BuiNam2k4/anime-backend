@@ -18,7 +18,7 @@ public class Genre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-
+    private Integer malId;
     @ManyToMany(mappedBy = "genres")
     @ToString.Exclude
     @Builder.Default
