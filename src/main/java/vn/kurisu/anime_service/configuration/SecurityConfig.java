@@ -31,7 +31,10 @@ public class SecurityConfig {
     private String signerKey;
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
+
+        httpSecurity
+                .cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         // cho phep post vao duong dan dang nhap ma khong can token
 
@@ -43,6 +46,7 @@ public class SecurityConfig {
         return httpSecurity.build();
 
     }
+
     @Bean
     JwtDecoder jwtDecoder(){
         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(),"HS256");
